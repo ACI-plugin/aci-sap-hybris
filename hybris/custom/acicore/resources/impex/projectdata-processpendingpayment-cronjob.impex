@@ -1,0 +1,18 @@
+INSERT_UPDATE ServicelayerJob;code[unique=true];springId[unique=true]
+;aciProcessPendingPaymentJob;aciProcessPendingPaymentJob
+
+INSERT_UPDATE CronJob; code[unique=true];job(code);singleExecutable;sessionLanguage(isocode)
+;aciProcessPendingPaymentJob;aciProcessPendingPaymentJob;false;en
+
+INSERT_UPDATE Trigger;cronjob(code)[unique=true];cronExpression
+;aciProcessPendingPaymentJob; 0 */10 * * * ?
+
+
+$contentCatalog=apparel-ukContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Online])[default=$contentCatalog:Online]
+ 
+INSERT_UPDATE JspIncludeComponent;$contentCV[unique=true];uid[unique=true];name;page;actions(uid,$contentCV);&componentRef
+;;AccountPaymentDetailsComponent;Account Payment Details Component;/WEB-INF/views/addons/aciwebaddon/responsive/pages/account/aciAccountPaymentInfoPage.jsp;;AccountPaymentDetailsComponent
+
+INSERT_UPDATE CMSLinkComponent;$contentCV[unique=true];uid[unique=true];name;url;&linkRef;target(code)[default='sameWindow']
+;;PaymentDetailsLink;PaymentDetailsLink;/my-account/aci-payment-details;PaymentDetailsLink;

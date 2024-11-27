@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2017 SAP SE or an SAP affiliate company.  All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+<!--
+	ATTENTION: This is just an example file. You have to edit it according to your needs.
+-->
+
+<items 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+			xsi:noNamespaceSchemaLocation="items.xsd">
+
+	<enumtypes>
+		
+		<enumtype code="OrderStatus" autocreate="false" generate="true"
+			dynamic="true">
+			<value code="WAITING_ACI_PAYMENT" />
+			<value code="PARTIAL_CAPTURED" />
+		</enumtype>
+		
+		<enumtype code="ACITransactionType" generate="true" autocreate="true" dynamic="false">
+			<description>This enumeration denotes the different transaction types available in ACI</description>
+			<value code="AUTHORIZATION" />
+			<value code="CAPTURE" />
+			<value code="REFUND" />
+			<value code="REVERSAL" />
+		</enumtype>
+		
+		<enumtype code="ACIShippingModeType" generate="true" autocreate="true" dynamic="false">
+			<description>This enumeration for ACI shipping modes</description>
+			<value code="LOWEST_COST" />
+			<value code="CARRIER_DESIGNATED_BY_CUSTOMER" />
+			<value code="ELECTRONIC_DELIVERY" />
+			<value code="GROUND" />
+			<value code="INTERNATIONAL" />
+			<value code="MILITARY" />
+			<value code="NEXT_DAY_OVERNIGHT" />
+			<value code="OTHER" />
+			<value code="STORE_PICKUP" />
+			<value code="SAME_DAY_SERVICE" />
+			<value code="TWO_DAY_SERVICE" />
+			<value code="THREE_DAY_SERVICE" />
+			<value code="POINT_PICKUP" />
+			<value code="PARCEL_STATION" />
+			<value code="STANDARD" />
+		</enumtype>
+		
+		<enumtype code="ACIPaymentOptionsType" generate="true" autocreate="true" dynamic="false">
+			<description>This enumeration denotes the different transaction types available in ACI</description>
+			<value code="AUTHORIZE" />
+			<value code="SALE" />
+		</enumtype>
+		
+		<enumtype code="ACIWidgetLocationType" generate="true" autocreate="true" dynamic="false">
+			<description>This enumeration denotes the different widget display types available in ACI</description>
+			<value code="BILLING_PAGE" />
+			<value code="STANDALONE" />
+		</enumtype>
+		<enumtype code="ACIBrandDisplayModeType" generate="true" autocreate="true" dynamic="false">
+			<description>This enumeration denotes the different widget display types available in ACI</description>
+			<value code="WIDGET" />
+			<value code="BILLING_PAGE" />
+		</enumtype>
+		<enumtype code="SyncType" generate="true" autocreate="true" dynamic="false">
+			<description>This enumeration denotes the different transaction types available in ACI</description>
+			<value code="SYNC" />
+			<value code="ASYNC" />
+		</enumtype>
+		
+		<enumtype code="ThreeDSChallengeIndicatorType" autocreate="true" generate="true"
+			dynamic="false">
+			<value code="NO_PREFERENCE"/>
+			<value code="NO_CHALLENGE_REQUESTED" />
+			<value code="CHALLENGE_REQUESTED_3D_SECURE_REQUESTOR_PREFERENCE" />
+			<value code="CHALLENGE_REQUESTED_MANDATE" />
+		</enumtype>
+		<enumtype code="ThreeDSAuthenticationType" autocreate="true" generate="true"
+			dynamic="false">
+			<value code="STATIC" />
+			<value code="DYNAMIC" />
+			<value code="OOB" />
+			<value code="DECOUPLED" />
+		</enumtype>
+		<enumtype code="ThreeDSExemptionFlagType" autocreate="true" generate="true"
+			dynamic="false">
+			<value code="LOW_VALUE_EXEMPTION" />
+			<value code="TRA_EXEMPTION" />
+			<value code="TRUSTED_BENEFICIARY_EXEMPTION" />
+			<value code="CORPORATE_CARD_PAYMENT_EXEMPTION" />
+		</enumtype>
+		<enumtype code="ChallengeMandatedIndicatorType" autocreate="true" generate="true"
+			dynamic="false">
+			<value code="Y" />
+			<value code="N" />
+		</enumtype>
+	</enumtypes>
+	<relations>
+		<relation localized="false" code="ACIConfig2PaymentMethods" autocreate="true" generate="true">
+			<deployment table="ACIConfig2PaymentMethods" typecode="11123" />
+			<sourceElement type="ACIConfig" qualifier="aciConfig" cardinality="many"></sourceElement>
+			<targetElement type="ACIPaymentMethods" qualifier="allowedPaymentTypes" cardinality="many" collectiontype="set"></targetElement>
+		</relation>
+		<relation localized="false" code="Order2AciResponse" autocreate="true" generate="true">
+			<sourceElement type="AbstractOrder" qualifier="order" cardinality="one"></sourceElement>
+			<targetElement type="ACIResponse" qualifier="aciResponse" cardinality="many" collectiontype="list"></targetElement>
+		</relation>
+	</relations>
+	<itemtypes>
+		<typegroup name="Hybris">
+
+			<itemtype code="BaseStore" generate="false" autocreate="false">
+				<attributes>
+					<attribute type="ACIConfig" qualifier="ACIConfig">
+						<modifiers write="true" read="true" unique="true" optional="true"/>
+						<persistence type="property"/>
+					</attribute>
+				</attributes>
+			</itemtype>
+			<itemtype code="DeliveryMode" autocreate="false" generate="false">
+				<attributes>
+					<attribute qualifier="aciShippingMode" type="ACIShippingModeType">
+						<modifiers write="true" read="true" unique="true" optional="true"/>
+						<persistence type="property"/>
+					</attribute>
+				</attributes>
+			</itemtype>
+			<itemtype code="AbstractOrder" autocreate="false" generate="false">
+				<attributes>
+					<attribute qualifier="aciMerchantTransactionId" type="java.lang.String" autocreate="true">
+						<description>Cart code</description>
+						<persistence type="property"/>
+						<modifiers read="true" write="true" optional="true" search="true" />
+					</attribute>
+					<attribute qualifier="aciPaymentId" type="java.lang.String" autocreate="true">
+						<description>ACI Payment ID</description>
+						<persistence type="property"/>
+						<modifiers read="true" write="true" optional="true" search="true" />
+					</attribute>
+					<attribute qualifier="aciPaymentType" type="java.lang.String" autocreate="true">
+						<description>ACI Payment Type, Authorization(PA) or Sale(DB)</description>
+						<persistence type="property"/>
+						<modifiers read="true" write="true" optional="true" search="true" />
+					</attribute>
+					<attribute qualifier="aciCheckoutId" type="java.lang.String" autocreate="true">
+						<description>ACI Order ID</description>
+						<persistence type="property"/>
+						<modifiers read="true" write="true" optional="true" search="true" />
+					</attribute>
+					<attribute qualifier="aciPaymentStatus" type="java.lang.String" autocreate="true">
+						<description>ACI Payment ID</description>
+						<persistence type="property"/>
+						<modifiers read="true" write="true" optional="true" search="true" />
+					</attribute>
+					
+				</attributes>
+			</itemtype>
+
+		<itemtype code="PaymentInfo" autocreate="false" generate="false">
+            <description>Extending PaymentInfo type with ACI properties.</description>
+            <attributes>
+                <attribute qualifier="aciPaymentBrand" type="java.lang.String">
+                    <description>Payment method</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="aciPaymentId" type="java.lang.String">
+                    <description>aCI Payment Id</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="aciRegistrationId" type="java.lang.String">
+                    <description>ACI Registration identifier </description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="aciCardBin" type="java.lang.String">
+                    <description>Credit Card BIN (first 4 to 6 digits)</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="aciCardNumber" type="java.lang.String">
+                    <description>last 4 digits)</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="aciCardHolder" type="java.lang.String">
+                    <description>Credit Card holder name</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="aciPaymentType" type="java.lang.String">
+                    <description>Credit Card Type</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="aciCardExpiryMonth" type="java.lang.String">
+                    <description>Credit Card expiration date</description>
+                    <persistence type="property"/>
+                </attribute>
+                 <attribute qualifier="aciCardExpiryYear" type="java.lang.String">
+                    <description>Credit Card expiration date</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="aciThreeDeci" type="java.lang.String">
+                    <description>Whether 3D secure was offered or not</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="aciThreeDxid" type="java.lang.String">
+                    <description>Whether 3D secure was offered or not</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="aciThreeDverificationId" type="java.lang.String">
+                    <description>Whether 3D secure was authenticated or not</description>
+                    <persistence type="property"/>
+                </attribute>
+            </attributes>
+        </itemtype>
+        </typegroup>
+        <typegroup name="ACI">
+			<itemtype code="ACIConfig" generate="true" autocreate="true" jaloclass="com.aci.jalo.ACIConfig">
+				<description>Hold configurations Of ACI in Databases under table "ACIConfigTbl"</description>
+				<deployment table="ACIConfigTbl" typecode="11120" />
+				<attributes>
+					<attribute qualifier="code" type="java.lang.String">
+						<description>The Id of ACIConfiguration</description>
+						<modifiers write="true" read="true" unique="true" optional="false" initial="true"/>
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="active" type="java.lang.Boolean">
+						<defaultvalue>Boolean.FALSE</defaultvalue>
+						<description>Active ACI Paymentt</description>
+						<modifiers write="true" read="true" optional="false" initial="true"/>
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="checkoutSummaryRequired" type="java.lang.Boolean">
+						<defaultvalue>Boolean.FALSE</defaultvalue>
+						<description>Active ACI Payment</description>
+						<modifiers write="true" read="true" optional="false" initial="true"/>
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="bearerToken" type="java.lang.String">
+						<description>Merchant ID</description>
+						<modifiers write="true" read="true" optional="false" initial="true"/>
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="entityId" type="java.lang.String">
+						<description>Merchant email address</description>
+						<modifiers write="true" read="true" optional="false" initial="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="paymentOption" type="ACIPaymentOptionsType">
+						<defaultvalue>em().getEnumerationValue("ACIPaymentOptionsType", "AUTHORIZE")</defaultvalue>
+						<description>Determines payment option of the merchant</description>
+						<modifiers write="true" read="true" optional="false" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="isThreedsEnabled" type="java.lang.Boolean">
+						<defaultvalue>Boolean.FALSE</defaultvalue>
+						<description>3DS enabled?</description>
+						<modifiers write="true" read="true" optional="false" initial="true"/>
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="threeDSChallengeIndicator" type="ThreeDSChallengeIndicatorType">
+						<description>Indicates whether a challenge is requested for this transaction. </description>
+						<modifiers write="true" read="true" optional="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="threeDSAuthentication" type="ThreeDSAuthenticationType">
+						<description>The type of authentication that was requested by the ACS.</description>
+						<modifiers write="true" read="true" optional="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="threeDSExemptionFlag" type="ThreeDSExemptionFlagType">
+						<description>Flags the transaction as exemption during authorization</description>
+						<modifiers write="true" read="true" optional="true" />
+						<persistence type="property"/>
+					</attribute>
+					
+					<attribute qualifier="threeDSchallengeMandatedInd" type="ChallengeMandatedIndicatorType">
+						<description>Indication of whether a challenge is required for the transaction to be authorized due to local/regional mandates or other variable.</description>
+						<modifiers write="true" read="true" optional="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="threeDSVersion" type="java.lang.String">
+						<description>Version of 3D (examples: 1.0.2, 2.1.0, 2.2.0 )</description>
+						<modifiers write="true" read="true" optional="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="dsTransactionId" type="java.lang.String">
+						<description>Transaction ID assigned by the directory server</description>
+						<modifiers write="true" read="true" optional="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="transactionStatusReason" type="java.lang.String">
+						<description>Provides information on why the Transaction Status field has the specified value</description>
+						<modifiers write="true" read="true" optional="true"  />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="acsTransactionId" type="java.lang.String">
+						<description>This field contains a universally unique transaction identifier assigned by the ACS</description>
+						<modifiers write="true" read="true" optional="true" />
+						<persistence type="property"/>
+					</attribute>
+					
+			</attributes>
+				<indexes>
+					<index name="code" unique="true">
+						<key attribute="code" />
+					</index>
+				</indexes>
+			</itemtype>
+			
+			<itemtype code="ACIResponse" generate="true" autocreate="true" jaloclass="com.aci.jalo.ACIResponse">
+				<description>Hold ACI transaction status in Databases under table "ACIResponse"</description>
+				<deployment table="ACIResponseTbl" typecode="11121" />
+				<attributes>
+					<attribute qualifier="transactionId" type="java.lang.String">
+						<description>transaction Id in ACI response</description>
+						<modifiers write="true" read="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="result" type="java.lang.String">
+						<description>status of ACI TRansaction</description>
+						<modifiers write="true" read="true"/>
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="resultDetails" type="java.lang.String">
+						<description>status of ACI TRansaction</description>
+						<modifiers write="true" read="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="paymentType" type="java.lang.String">
+						<description>payment type in transaction</description>
+						<modifiers write="true" read="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="riskScore" type="java.lang.String">
+						<description>Risk scrore in transaction</description>
+						<modifiers write="true" read="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="transactionTimeStamp" type="java.lang.String">
+						<description>timestamp at which the transaction happened</description>
+						<modifiers write="true" read="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="transactionNumber" type="java.lang.Integer">
+						<description>type of transaction</description>
+						<modifiers write="true" read="true"/>
+						<persistence type="property"/>
+					</attribute>
+										
+				</attributes>
+				<indexes>
+					<index name="code" unique="true">
+						<key attribute="transactionId" />
+						<key attribute="transactionNumber" />
+					</index>
+				</indexes>
+			</itemtype>
+			<itemtype code="ACIPaymentMethods" generate="true" autocreate="true" jaloclass="com.aci.jalo.ACIPaymentMethods">
+				<description>Hold ACI transaction status in Databases under table "ACIResponse"</description>
+				<deployment table="ACIPaymentMethodsTbl" typecode="11122" />
+				<attributes>
+					<attribute qualifier="code" type="java.lang.String">
+						<description>code for referring paymentMethod</description>
+						<modifiers write="true" read="true" unique="true" optional="false" initial="true"/>
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="name" type="java.lang.String">
+						<description>code for referring paymentMethod</description>
+						<modifiers write="true" read="true" unique="true" optional="false" initial="true"/>
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="description" type="java.lang.String">
+						<description>paymentMethod description</description>
+						<modifiers write="true" read="true" unique="true" optional="true" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="allowRegstration" type="java.lang.Boolean">
+						<defaultvalue>Boolean.FALSE</defaultvalue>
+						<description>is Registration allowed for Card type?</description>
+						<modifiers write="true" read="true" unique="true" optional="false" />
+						<persistence type="property"/>
+					</attribute>
+					<attribute qualifier="syncType" type="SyncType">
+						<description>is payment method sync/async?</description>
+						<modifiers write="true" read="true" unique="true" optional="false" />
+						<persistence type="property"/>
+					</attribute>
+				</attributes>
+				<indexes>
+					<index name="code" unique="true">
+						<key attribute="code" />
+					</index>
+				</indexes>
+			</itemtype>
+		</typegroup>
+	</itemtypes>
+</items>

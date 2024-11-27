@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="/platform"/>
+	<classpathentry kind="lib" path="web/webroot/WEB-INF/lib/displaytag-1.2.jar"/>
+	<classpathentry kind="lib" path="web/webroot/WEB-INF/lib/jstl-impl-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gensrc"/>
+	<classpathentry kind="src" path="web/src"/>
+	<classpathentry kind="lib" path="lib/httpcore-4.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-apache-client4-1.19.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-client-1.19.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-core-1.19.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/basecommerce"/>
+	<classpathentry kind="lib" path="lib/gson-2.8.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/acceleratorservices"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/commercefacades"/>
+	<classpathentry kind="lib" path="lib/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

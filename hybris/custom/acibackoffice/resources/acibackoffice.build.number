@@ -1,0 +1,9 @@
+#Ant properties
+#Wed Sep 13 18:38:42 CEST 2017
+builddate=20170913 1836
+description=acibackoffice
+name=acibackoffice
+releasedate=20161216 2030
+vendor=hybris
+version=6.3.0.9
+version.api=6.3.0

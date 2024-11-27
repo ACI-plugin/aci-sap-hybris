@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://www.zeroturnaround.com">
+  <classpath>
+    <dir name="D:\tryzens\hybris\projects\ACI\Review\codespace\hybris1905\hybris\bin\custom\acibackoffice/backoffice/classes" />
+  </classpath>
+</application>

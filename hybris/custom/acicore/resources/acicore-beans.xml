@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2017 SAP SE or an SAP affiliate company.  All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+<!--
+	ATTENTION: This is just an example file. You have to edit it according to your needs.
+-->
+
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="beans.xsd">
+
+	<!--
+		Example Data POJO
+	
+	<bean class="com.hybris.aci.data.AbstractPojo" abstract="true">
+		<property name="id" type="String"/>
+		<property name="flag" type="boolean"/>
+	</bean>
+
+	<bean class="com.hybris.aci.data.MyPojo" extends="com.hybris.aci.data.AbstractPojo">
+		<property name="message" type="String"/>
+	</bean>
+
+	<bean class="com.hybris.aci.data.AnnotatedPojo">
+
+		<import type="javax.xml.bind.annotation.XmlRootElement"/>
+		<import type="javax.xml.bind.annotation.XmlElements"/>
+		<import type="javax.xml.bind.annotation.XmlElement"/>
+
+		<annotations>@XmlRootElement</annotations>
+		
+		<property name="someText" type="String">
+
+			<annotations scope="getter">
+			@XmlElements(value = {
+					@XmlElement(name="map",
+						type=ValueAsMap.class),
+					@XmlElement(name="string",
+						type=ValueAsString.class)
+			})
+			</annotations>
+
+		</property>
+
+	</bean>
+
+    <bean  class="de.hybris.platform.catalog.data.Equals1">
+    	<property name="a1" type="boolean" equals="true"/>
+    	<property name="a2" type="int" equals="true"/>
+    	<property name="a3" type="String" equals="true"/>
+    	<property name="a4" type="de.hybris.platform.catalog.data.AbstractValue" equals="true"/>
+    	<property name="not4Equals" type="java.lang.Double"/>
+    </bean>
+
+    <bean class="de.hybris.platform.catalog.data.Equals2" extends="de.hybris.platform.catalog.data.Equals1" superEquals="true">
+    	<property name="a5" type="java.lang.Integer" equals="true"/>
+    	<property name="a6" type="java.util.List" equals="true"/>
+    	<property name="not4Equals" type="java.lang.Double"/>
+    </bean>
+
+	-->
+	
+	<enum class="de.hybris.platform.payment.dto.TransactionStatus">
+		<!-- Transaction is PENDING with the provider -->
+		<value>PENDING</value>
+		<!-- An Error occured -->
+	</enum>
+	<bean class="com.aci.payment.data.ACIPaymentMethodsData">
+		<property name="code" type="String"/>
+		<property name="name" type="String"/>
+		<property name="description" type="String"/>
+		<property name="allowRegstration" type="Boolean"/>
+		<property name="sync" type="String"/>
+	</bean>
+	
+	<bean class="com.aci.payment.data.ACIConfigData">
+		<description>Data object of ACI Config which has no equivalent on the type system</description>
+		<property name="code" type="String"/>
+		<property name="active" type="Boolean"/>
+		<property name="checkoutSummaryRequired" type="Boolean"/>
+		<property name="bearerToken" type="String"/>
+		<property name="entityId" type="String"/>
+		<property name="paymentOption" type="String"/>
+		<property name="allowedPaymentMethods" type="java.util.List&lt;com.aci.payment.data.ACIPaymentMethodsData>" /> 
+		<property name="dsTransactionId" type="String"/>
+		<property name="threeDSVersion" type="String"/>
+		<property name="threeDSChallengeIndicator" type="String"/>
+		<property name="threeDSAuthentication" type="String"/>
+		<property name="threeDSExemptionFlag" type="String"/>
+		<property name="threeDSchallengeMandatedInd" type="String"/>
+		<property name="transactionStatusReason" type="String"/>
+		<property name="acsTransactionId" type="String"/>
+		<property name="isThreeDSEnabled" type="Boolean"/>
+	</bean>
+	
+	<bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">
+		<property name="aciCheckoutId" type="String"/>
+		<property name="aciPaymentId" type="String"/>
+		<property name="aciPaymentType" type="String"/>
+		<property name="aciMerchantTransactionId" type="String"/>
+		<property name="aciPaymentInfo" type="com.aci.payment.data.ACIPaymentInfoData"/>
+	</bean>
+	<bean class="de.hybris.platform.commercefacades.order.data.DeliveryModeData">
+		<property name="aciShippingMode" type="String"/>
+	</bean>
+	
+	 <bean class="com.aci.payment.data.ACIPaymentInfoData">
+        <property name="id" type="String" />
+        <property name="aciCardNumber" type="String" />
+        <property name="aciCardHolder" type="String" />
+        <property name="aciCardExpiryMonth" type="String" />
+        <property name="aciCardExpiryYear" type="String" />
+        <property name="aciPaymentType" type="String" />
+        <property name="aciPaymentBrand" type="String" />
+        <property name="aciRegistrationId" type="String" />
+    </bean>
+</beans>
