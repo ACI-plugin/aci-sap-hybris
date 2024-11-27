@@ -1,0 +1,55 @@
+#acipayments .wpwl-button-pay{
+	background-color: #ec7205;
+	border-color: #ec7205;
+	
+}
+.wpwl-button-pay:hover{
+	background-color: #ec7205;
+	border-color: #ec7205;
+	
+}
+.wpwl-container{
+	border: 1px solid #cacaca;
+	margin:auto;
+	margin-bottom:20px;
+	padding-top: 40px;
+	width:70%;
+}
+/*************************** Widget CSS Overides Samples ***********************/
+
+ /*  div.wpwl-wrapper, div.wpwl-label, div.wpwl-sup-wrapper { width: 100% }
+
+   div.wpwl-group-expiry, div.wpwl-group-brand { width: 30%; float:left }
+
+   div.wpwl-group-cvv { width: 68%; float:left; margin-left:2% }
+
+   div.wpwl-group-cardHolder, div.wpwl-sup-wrapper-street1, div.wpwl-group-expiry { clear:both }
+
+   div.wpwl-sup-wrapper-street1 { padding-top: 1px }
+
+   div.wpwl-wrapper-brand { width: auto }
+
+   div.wpwl-sup-wrapper-state, div.wpwl-sup-wrapper-city { width:32%;float:left;margin-right:2% }
+
+   div.wpwl-sup-wrapper-postcode { width:32%;float:left }
+
+   div.wpwl-sup-wrapper-country { width: 66% }
+
+   div.wpwl-wrapper-brand, div.wpwl-label-brand { display: none;}
+
+   div.wpwl-group-cardNumber { width:70%; float:left; font-size: 20px; }
+
+   div.wpwl-group-brand { width:30%; float:left; margin-top:28px }
+
+div.wpwl-brand-card {width: 80px;}
+
+.wpwl-group.wpwl-group-brand {
+
+    position: relative;
+
+    top: 13px;
+
+    left: 10px;
+    
+}
+*/

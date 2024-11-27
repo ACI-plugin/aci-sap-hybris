@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2017 SAP SE or an SAP affiliate company.  All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!--
+	The hybris platform provides one single Spring application context for beans located at the jalo layer.
+	Each extension can add beans to this context by specifying them at this configuration file.
+	 
+	You can use and/or redefine beans defined at configuration files of other extensions as well as
+	adding new one.
+		
+	If you want to locate this file at a different location or want to use several files for better,
+	structuring, please use the '<yourextension>.application-context' property at your project.properties file.
+	There you can specify a comma separated list of files where first is tried to find a file per classpath and
+	then per file system.
+
+	
+	If you want to configure beans for your web module please have a look at
+	your web/webroot/WEB-INF/<extname>-web-spring.xml.
+	-->
+	
+	<!--  Example how to override a manager -->
+	<!--
+	<bean id="core.productManager"   class="com.hybris.aci.jalo.AcicoreProductManager" 	init-method="init"	destroy-method="destroy" />
+	-->
+	
+	
+ 	<!--  Example how to configure the class to use for jalo session creation -->
+	<!--
+	<bean id="jalosession"   class="de.hybris.platform.jalo.JaloSessionFactory">
+		<property name="targetClassName" value="com.hybris.aci.jalo.AcicoreJaloSession"/>
+	</bean>
+	-->
+
+	
+	<!--  Example how to override an item  -->
+	<!-- 
+	<bean id="de.hybris.platform.jalo.product.Product" class="com.hybris.aci.jalo.AcicoreProduct" scope="prototype" />		
+ 	-->
+
+	<!--  
+	 Example how to register and use an AOP aspect 
+     Also see http://static.springframework.org/spring/docs/2.5.x/reference/aop.html	
+     -->
+	
+	<!-- 
+	<bean id="acicoreProfBean" class="com.hybris.aci.aop.AcicoreProfilingAspect"/>
+	<aop:config proxy-target-class="true">
+  		<aop:aspect id="acicoreProfAspect" ref="acicoreProfBean" >
+    	  <aop:pointcut id="profiledMethods" 
+	      	expression="execution(* getModificationTime(..))" />  	            
+	   		<aop:around pointcut-ref="profiledMethods" method="profile" />
+  		</aop:aspect>
+	</aop:config>
+	 -->
+
+	
+	<!-- some other examples of a pointcut that matches everything:
+
+    	  <aop:pointcut id="profiledMethods" 
+	      	expression="bean(de.hybris.platform.jalo.user.Customer) &amp;&amp; 
+	      	            !execution(* getPK(..))" />  	            
+	       <aop:pointcut id="profiledMethods" expression="execution(* *(..))" />	
+	  -->
+	
+    <bean id="acicoreSystemSetup" class="com.hybris.aci.setup.AcicoreSystemSetup">
+        <!-- constructor arg injection example -->
+        <constructor-arg ref="acicoreService"/>
+    </bean>
+    <alias name="defaultACIOrderPopulator" alias="aciOrderPopulator"/>
+    <bean id="defaultACIOrderPopulator" class="com.hybris.aci.converter.populator.ACIOrderPopulator" parent="baseOrderPopulator">
+   	<property name="aciPaymentInfoConverter" ref="aciPaymentInfoConverter"/>
+    </bean>
+     <!--ACI Order Converter Populator-->
+     
+    
+    <bean id="defaultOrderConverter" parent="abstractPopulatingConverter">
+        <property name="targetClass" value="de.hybris.platform.commercefacades.order.data.OrderData"/>
+        <property name="populators">
+            <list>
+                <ref bean="orderPopulator"/>
+                <ref bean="orderAppliedVouchersPopulator"/>
+                <ref bean="pickupOrderEntryGroupPopulator"/>
+                <ref bean="deliveryOrderEntryGroupPopulator"/>
+                <ref bean="aciOrderPopulator"/>
+            
+            </list>
+        </property>
+    </bean>
+    
+    <alias name="defaultACIPaymentInfoConverter" alias="aciPaymentInfoConverter"/>
+     <bean id="defaultACIPaymentInfoConverter" parent="abstractPopulatingConverter">
+        <property name="targetClass" value="com.aci.payment.data.ACIPaymentInfoData"/>
+        <property name="populators">
+            <list>
+                <ref bean="aciPaymentInfoPopulator"/>
+            </list>
+        </property>
+    </bean>
+    
+     <alias name="defaultACIAddressReverseConverter" alias="aciAddressReverseConverter"/>
+	<bean id="defaultACIAddressReverseConverter" parent="abstractPopulatingConverter">
+		<property name="targetClass" value="de.hybris.platform.core.model.user.AddressModel"/>
+		<property name="populators">
+			<list>
+				<ref bean="aciAddressReversePopulator"/>
+			</list>
+		</property>
+	</bean>
+	<alias name="defaultACIAddressReversePopulator" alias="aciAddressReversePopulator"/>
+	<bean id="defaultACIAddressReversePopulator"
+			class="com.hybris.aci.converter.populator.ACIAddressReversePopulator">
+		<property name="addressReversePopulator" ref="addressReversePopulator"/>
+	</bean>
+    
+    <alias name="defaultACIPaymentInfoPopulator" alias="aciPaymentInfoPopulator"/>
+    <bean id="defaultACIPaymentInfoPopulator" class="com.hybris.aci.converter.populator.ACIPaymentInfoPopulator">
+    </bean>
+    
+    <alias name="defaultACIPaymentConfigConverter" alias="aciPaymentConfigConverter"/>
+     <bean id="defaultACIPaymentConfigConverter" parent="abstractPopulatingConverter">
+        <property name="targetClass" value="com.aci.payment.data.ACIConfigData"/>
+        <property name="populators">
+            <list>
+                <ref bean="aciPaymentConfigPopulator"/>
+            </list>
+        </property>
+    </bean>
+    <alias name="defaultACIPaymentConfigPopulator" alias="aciPaymentConfigPopulator"/>
+    <bean id="defaultACIPaymentConfigPopulator" class="com.hybris.aci.converter.populator.ACIConfigPopulator">
+    </bean>
+
+	
+	<alias name="defaultAciAccountDao" alias="aciAccountDao"/>
+	<bean id="defaultAciAccountDao"
+			class="com.hybris.aci.dao.impl.DefaultACIAccountDao"
+			parent="abstractItemDao"
+			>
+	</bean>
+	 <alias name="defaultACIOrderDao" alias="aciOrderDao"/>
+    <bean id="defaultACIOrderDao" class="com.hybris.aci.dao.impl.DefaultACIOrderDao">
+        <property name="flexibleSearchService" ref="flexibleSearchService"/>
+    </bean>
+	<alias name="defaultAciAccountService" alias="aciAccountService"/>
+	<bean id="defaultAciAccountService" class="com.hybris.aci.service.impl.DefaultACIAccountService">
+        <!-- setter injection example -->
+        <property name="aciAccountDao" ref="aciAccountDao"/>
+        <property name="modelService" ref="modelService"/>
+    </bean>
+    <alias name="defaultACIConfigService" alias="aciConfigService"/>
+	<bean id="defaultACIConfigService" class="com.hybris.aci.service.impl.DefaultACIConfigService">
+        <property name="siteConfigService" ref="siteConfigService"/>
+        <property name="baseStoreService" ref="baseStoreService"/>
+        <property name="configurationService" ref="configurationService"/>
+        <property name="uiExperienceService" ref="uiExperienceService"/>
+        
+    </bean>
+    <alias name="defaultACIPaymentService" alias="aciPaymentService"/>
+	<bean id="defaultACIPaymentService" class="com.hybris.aci.service.impl.DefaultACIPaymentService">
+        <property name="aciConfigService" ref="aciConfigService"/>
+        <property name="commonI18NService" ref="commonI18NService"/>
+        <property name="modelService" ref="modelService"/>
+        <property name="aciTransactionService" ref="aciTransactionService"/>
+    </bean>
+   <alias name="defaultAciOrderService" alias="aciOrderService"/>
+	<bean id="defaultAciOrderService" class="com.hybris.aci.service.impl.DefaultACIOrderService">
+        <!-- setter injection example -->
+        <property name="aciOrderDao" ref="aciOrderDao"/>
+    </bean>
+    
+    	<alias name="defaultACITransactionService" alias="aciTransactionService"/>
+    <bean id="defaultACITransactionService" class="com.hybris.aci.service.impl.DefaultACITransactionService">
+        <!-- setter injection example -->
+        <property name="modelService" ref="modelService"/>
+        <property name="commonI18NService" ref="commonI18NService"/>
+    </bean>
+	<alias name="defaultAcicoreService" alias="acicoreService"/>
+    <bean id="defaultAcicoreService" class="com.hybris.aci.service.impl.DefaultAcicoreService">
+        <!-- setter injection example -->
+        <property name="modelService" ref="modelService"/>
+        <property name="mediaService" ref="mediaService"/>
+        <property name="flexibleSearchService" ref="flexibleSearchService"/>
+    </bean>
+    
+    <alias name="defaultACIRefundAmountCalculationService" alias="aciRefundAmountCalculationService"/>
+    <bean id="defaultACIRefundAmountCalculationService" class="com.hybris.aci.service.impl.DefaultACIRefundAmountCalculationService">
+   </bean>
+    <alias name="defaultACIAccountFacade" alias="aciAccountFacade"/>		
+	 <bean id="defaultACIAccountFacade" class="com.hybris.aci.facades.impl.DefaultACIAccountFacade">
+        <property name="userService" ref="userService"/>
+        <property name="aciAccountService" ref="aciAccountService"/>
+        <property name="aciPaymentFacade" ref="aciPaymentFacade"/>
+          <property name="aciPaymentInfoConverter" ref="aciPaymentInfoConverter"/>
+        <property name="aciConfigFacade" ref="aciConfigFacade"/>
+     </bean>
+      <alias name="defaultACIOrderFacade" alias="aciOrderFacade"/>		
+	 <bean id="defaultACIOrderFacade" class="com.hybris.aci.facades.impl.DefaultACIOrderFacade">
+        <property name="aciOrderService" ref="aciOrderService"/>
+        <property name="aciOrderConverter" ref="orderConverter"/>
+     </bean>
+		<alias name="defaultACIConfigFacade" alias="aciConfigFacade"/>		
+	 <bean id="defaultACIConfigFacade" class="com.hybris.aci.facades.impl.DefaultACIConfigFacade">
+        <property name="siteConfigService" ref="siteConfigService"/>
+         <property name="aciConfigService" ref="aciConfigService"/>
+        <property name="aciPaymentConfigConverter" ref="aciPaymentConfigConverter"/>
+    </bean>
+	
+	<alias name="defaultACIPaymentFacade" alias="aciPaymentFacade"/>
+    <bean id="defaultACIPaymentFacade" class="com.hybris.aci.facades.impl.DefaultACIPaymentFacade">
+   		<property name="siteConfigService" ref="siteConfigService"/>
+   		<property name="cartService" ref="cartService"/>
+   		<property name="cartFacade" ref="cartFacade"/>
+   		<property name="aciConfigFacade" ref="aciConfigFacade"/>
+   		<property name="customerEmailResolutionService" ref="customerEmailResolutionService"/>
+   		<property name="aciPaymentService" ref="aciPaymentService"/>
+   		<property name="aciAccountService" ref="aciAccountService"/>
+   		
+    </bean>
+    
+    <alias name="defaultACICheckoutFacade" alias="aciCheckoutFacade"/>
+    <bean id="defaultACICheckoutFacade" class="com.hybris.aci.facades.impl.DefaultACICheckoutFacade">
+        <!-- setter injection example -->
+        <property name="modelService" ref="modelService"/>
+        <property name="cartService" ref="cartService"/>
+        <property name="userService" ref="userService"/>
+        <property name="commonI18NService" ref="commonI18NService"/>
+        <property name="aciPaymentFacade" ref="aciPaymentFacade"/>
+        <property name="checkoutFacade" ref="checkoutFacade"/>
+        <property name="aciOrderService" ref="aciOrderService"/>
+        <property name="aciTransactionService" ref="aciTransactionService"/>
+        
+        <property name="aciAddressReverseConverter" ref="aciAddressReverseConverter"/>
+        
+    </bean>
+    <!-- Process ACI Pending Orders -->
+    <bean id="aciBusinessProcessService" class="com.hybris.aci.service.impl.DefaultACIBusinessProcessService" autowire="byName">
+        <property name="businessProcessService" ref="businessProcessService" />
+    </bean>
+   	<bean id="aciProcessPendingPaymentJob" class="com.hybris.aci.job.ACIProcessPendingPaymentJob" autowire="byName">
+        <property name="aciOrderService" ref="aciOrderService"/>
+        <property name="aciPaymentService" ref="aciPaymentService" />
+        <property name="aciTransactionService" ref="aciTransactionService" />
+        <property name="aciBusinessProcessService" ref="aciBusinessProcessService" />
+    </bean>
+    <alias name="aciOrderCancelPaymentServiceAdapter" alias="OmsOrderCancelPaymentServiceAdapter"/>
+    
+     <bean id="aciOrderCancelPaymentServiceAdapter" class="com.hybris.aci.service.impl.ACIOrderCancelPaymentServiceAdapter">
+        <property name="aciPaymentService" ref="aciPaymentService" />
+        <property name="modelService" ref="modelService" />
+        <property name="calculationService" ref="calculationService" />
+    </bean>
+    
+   	<bean id="defaultImmediateCancelRequestExecutor"
+      class="de.hybris.platform.ordercancel.impl.executors.ImmediateCancelRequestExecutor"
+	      scope="prototype">
+		<property name="modelService" ref="modelService"/>
+		<property name="orderCancelRecordsHandler" ref="orderCancelRecordsHandler"/>
+		<property name="completeCancelStatusChangeStrategy" ref="setCancellledStrategy"/>
+		<!--
+			<property name="partialCancelStatusChangeStrategy" ref=""/> Provide a
+			strategy here if Order's state should change when partially
+			cancelled.
+		-->
+		<property name="paymentServiceAdapter"
+			ref="OmsOrderCancelPaymentServiceAdapter"/> 
+	</bean>
+	
+	<bean id="warehouseResponseExecutor"
+	      class="de.hybris.platform.ordercancel.impl.executors.WarehouseResponseExecutor"
+	      scope="prototype">
+		<property name="modelService" ref="modelService"/>
+		<property name="orderCancelRecordsHandler" ref="orderCancelRecordsHandler"/>
+
+		<property name="completeCancelStatusChangeStrategy" ref="setCancellledStrategy"/>
+		<property name="partialCancelStatusChangeStrategy" ref="restorePreviousOrderStatusStrategy"/>
+		<property name="warehouseDenialStatusChangeStrategy" ref="restorePreviousOrderStatusStrategy"/>
+		<property name="warehouseErrorStatusChangeStrategy" ref="restorePreviousOrderStatusStrategy"/>
+		<property name="paymentServiceAdapter"
+			ref="OmsOrderCancelPaymentServiceAdapter"/> 
+		
+	</bean>
+</beans>

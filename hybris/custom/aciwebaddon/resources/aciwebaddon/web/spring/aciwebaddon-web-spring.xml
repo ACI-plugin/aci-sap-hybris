@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2017 SAP SE or an SAP affiliate company.  All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd">
+           
+    <context:annotation-config/> 
+
+<context:component-scan base-package="com.hybris.aci" scope-resolver="de.hybris.platform.spring.IgnoreTenantScopeMetadataResolver"/>
+
+	<!-- Expose /acceleratoraddon/web/webroot/WEB-INF/messages/base.js.properties  resource bundle as javascript variables -->
+	<bean id="defaultAciwebaddonJavaScriptMessageResourceAccessor" parent="abstractJavaScriptMessageResourceAccessor">
+		<property name="addOnName" value="aciwebaddon"/>
+	</bean>
+	
+	<bean id="defaultACIResponsivePaymentCheckoutValidator" class="com.hybris.aci.controllers.pages.checkout.steps.validation.impl.ACIResponsivePaymentCheckoutStepValidator" parent="abstractCheckoutStepValidator" />
+	<bean id="aciResponsiveSummaryCheckoutValidator" class="com.hybris.aci.controllers.pages.checkout.steps.validation.impl.ACIResponsiveSummaryCheckoutStepValidator" parent="abstractCheckoutStepValidator" >
+	<property name="aciCheckoutFacade" ref="aciCheckoutFacade"/>
+	</bean>
+	
+	<!-- Responsive ACI Checkout Steps - With Summary - START -->
+	
+	<alias name="defaultACIResponsiveMultiStepCheckout" alias="responsiveACIMultiStepCheckout" />
+	<bean id="defaultACIResponsiveMultiStepCheckout" parent="checkoutStep">
+		<property name="checkoutGroup" ref="responsiveCheckoutGroup"/>
+		<property name="checkoutStepValidator" ref="defaultResponsiveMultiStepCheckoutValidator"/>
+		<property name="transitions">
+			<map>
+				<entry key="previous" value-ref="REDIRECT_TO_CART"/>
+				<entry key="current" value-ref="REDIRECT_MULTI_STEP_CHECKOUT"/>
+				<entry key="next" value-ref="REDIRECT_TO_DELIVERY_ADDRESS"/>
+			</map>
+		</property>
+		<property name="progressBarId" value="multi"/>
+	</bean>
+
+	<alias name="defaultACIResponsiveDeliveryAddressCheckoutStep" alias="responsiveACIDeliveryAddressCheckoutStep" />
+	<bean id="defaultACIResponsiveDeliveryAddressCheckoutStep" parent="checkoutStep">
+		<property name="checkoutGroup" ref="responsiveCheckoutGroup"/>
+		<property name="checkoutStepValidator" ref="defaultResponsiveDeliveryAddressCheckoutValidator"/>
+		<property name="transitions">
+			<map merge="true">
+				<entry key="previous" value-ref="REDIRECT_TO_CART"/>
+				<entry key="current" value-ref="REDIRECT_TO_DELIVERY_ADDRESS"/>
+				<entry key="next" value-ref="REDIRECT_TO_DELIVERY_METHOD"/>
+			</map>
+		</property>
+		<property name="progressBarId" value="deliveryAddress"/>
+	</bean>
+
+	<alias name="defaultACIResponsiveDeliveryMethodCheckoutStep" alias="responsiveACIDeliveryMethodCheckoutStep" />
+	<bean id="defaultACIResponsiveDeliveryMethodCheckoutStep"  parent="checkoutStep">
+		<property name="checkoutGroup" ref="responsiveCheckoutGroup"/>
+		<property name="checkoutStepValidator" ref="defaultResponsiveDeliveryMethodCheckoutValidator"/>
+		<property name="transitions">
+			<map merge="true">
+				<entry key="previous" value-ref="REDIRECT_TO_DELIVERY_ADDRESS"/>
+				<entry key="current" value-ref="REDIRECT_TO_DELIVERY_METHOD"/>
+				<entry key="next" value-ref="REDIRECT_TO_ACI_BILLING"/>
+			</map>
+		</property>
+		<property name="progressBarId" value="deliveryMethod"/>
+	</bean>
+
+	<alias name="defaultResponsiveACIBillingCheckoutStep" alias="responsiveACIBillingMethodCheckoutStep" />
+	      <bean id="defaultResponsiveACIBillingCheckoutStep" parent="checkoutStep">
+		    <property name="checkoutGroup" ref="responsiveACICheckoutGroup"/>
+		    <property name="checkoutStepValidator" ref="defaultResponsivePaymentMethodCheckoutValidator"/>
+		    <property name="transitions">
+			  <map merge="true">
+				<entry key="previous" value-ref="REDIRECT_TO_DELIVERY_METHOD"/>
+				<entry key="current" value-ref="REDIRECT_TO_ACI_BILLING"/>
+				<entry key="next" value-ref="REDIRECT_TO_ACI_PAYMENT"/>
+			  </map>
+		    </property>
+		    <property name="progressBarId" value="billingMethod"/>
+	      </bean>
+	      <alias name="defaultResponsiveACIPaymentCheckoutStep" alias="responsiveACIPaymentCheckoutStep" />
+	      <bean id="defaultResponsiveACIPaymentCheckoutStep" parent="checkoutStep">
+		    <property name="checkoutGroup" ref="responsiveACICheckoutGroup"/>
+		    <property name="checkoutStepValidator" ref="defaultACIResponsivePaymentCheckoutValidator"/>
+		    <property name="transitions">
+			  <map merge="true">
+				<entry key="previous" value-ref="REDIRECT_TO_ACI_BILLING"/>
+				<entry key="current" value-ref="REDIRECT_TO_ACI_PAYMENT"/>
+				<entry key="next" value-ref="REDIRECT_TO_ACISUMMARY"/>
+			  </map>
+		    </property>
+		    <property name="progressBarId" value="aciPayMethod"/>
+	      </bean>
+	<alias name="defaultACIResponsiveSummaryCheckoutStep" alias="responsiveACISummaryCheckoutStep" />
+		<bean id="defaultACIResponsiveSummaryCheckoutStep"  parent="checkoutStep">
+			<property name="checkoutGroup" ref="responsiveCheckoutGroup"/>
+			<property name="checkoutStepValidator" ref="aciResponsiveSummaryCheckoutValidator"/>
+			<property name="transitions">
+				<map merge="true">
+					<entry key="previous" value-ref="REDIRECT_TO_ACI_PAYMENT"/>
+					<entry key="current" value-ref="REDIRECT_TO_ACISUMMARY"/>
+					<entry key="next" value="redirect:/checkout/orderConfirmation/%s"/>
+				</map>
+			</property>
+			<property name="progressBarId" value="confirmOrder"/>
+		</bean>
+	
+	
+	<!-- Responsive ACI Checkout Steps END - With Summary -->
+	
+	<!--- Responsive checkout group  - With Summary Start -->
+	
+		<alias name="defaultResponsiveACIMultiStepCheckoutGroup" alias="responsiveACICheckoutGroup" />
+		<bean id="defaultResponsiveACIMultiStepCheckoutGroup"  class="de.hybris.platform.acceleratorstorefrontcommons.checkout.steps.CheckoutGroup">
+			<property name="groupId"  value="responsiveACICheckoutGroup"/>
+			<property name="checkoutStepMap">
+				<map merge="true">
+					<entry key="multi" value-ref="responsiveACIMultiStepCheckout"/>
+					<entry key="delivery-address" value-ref="responsiveACIDeliveryAddressCheckoutStep"/>
+					<entry key="delivery-method" value-ref="responsiveACIDeliveryMethodCheckoutStep"/>
+					<entry key="billing-address" value-ref="responsiveACIBillingMethodCheckoutStep"/>
+					<entry key="aci-payment" value-ref="responsiveACIPaymentCheckoutStep"/>
+					<entry key="summary" value-ref="responsiveACISummaryCheckoutStep"/>
+				</map>
+			</property>
+			<property name="validationResultsMap">
+				<map merge="true">
+					<entry key="FAILED" value-ref="REDIRECT_TO_CART"/>
+					<entry key="REDIRECT_TO_DELIVERY_ADDRESS" value-ref="REDIRECT_TO_DELIVERY_ADDRESS"/>
+					<entry key="REDIRECT_TO_CART" value-ref="REDIRECT_TO_CART"/>
+					<entry key="REDIRECT_TO_ACI_BILLING" value-ref="REDIRECT_TO_ACI_BILLING"/>
+					<entry key="REDIRECT_TO_DELIVERY_METHOD" value-ref="REDIRECT_TO_DELIVERY_METHOD"/>
+					<entry key="REDIRECT_TO_ACISUMMARY" value-ref="REDIRECT_TO_ACISUMMARY"/>
+				</map>
+			</property>
+			<property name="checkoutProgressBar">
+				<map merge="true">
+					<entry key="1" value-ref="responsiveACIDeliveryAddressCheckoutStep"/>
+					<entry key="2" value-ref="responsiveACIDeliveryMethodCheckoutStep"/>
+					<entry key="3" value-ref="responsiveACIBillingMethodCheckoutStep"/>
+					<entry key="4" value-ref="responsiveACIPaymentCheckoutStep"/>
+					<entry key="5" value-ref="responsiveACISummaryCheckoutStep"/>
+				</map>
+			</property>
+		</bean>
+	
+	<!--- Responsive checkout group  - With Summary END -->
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+<!-- Responsive ACI Checkout Steps - With NO Summary - START -->
+	
+	<alias name="defaultACINOSUMResponsiveMultiStepCheckout" alias="responsiveACINOSUMMultiStepCheckout" />
+	<bean id="defaultACINOSUMResponsiveMultiStepCheckout" parent="checkoutStep">
+		<property name="checkoutGroup" ref="responsiveCheckoutGroup"/>
+		<property name="checkoutStepValidator" ref="defaultResponsiveMultiStepCheckoutValidator"/>
+		<property name="transitions">
+			<map>
+				<entry key="previous" value-ref="REDIRECT_TO_CART"/>
+				<entry key="current" value-ref="REDIRECT_MULTI_STEP_CHECKOUT"/>
+				<entry key="next" value-ref="REDIRECT_TO_DELIVERY_ADDRESS"/>
+			</map>
+		</property>
+		<property name="progressBarId" value="multi"/>
+	</bean>
+
+	<alias name="defaultACINOSUMResponsiveDeliveryAddressCheckoutStep" alias="responsiveACINOSUMDeliveryAddressCheckoutStep" />
+	<bean id="defaultACINOSUMResponsiveDeliveryAddressCheckoutStep" parent="checkoutStep">
+		<property name="checkoutGroup" ref="responsiveCheckoutGroup"/>
+		<property name="checkoutStepValidator" ref="defaultResponsiveDeliveryAddressCheckoutValidator"/>
+		<property name="transitions">
+			<map merge="true">
+				<entry key="previous" value-ref="REDIRECT_TO_CART"/>
+				<entry key="current" value-ref="REDIRECT_TO_DELIVERY_ADDRESS"/>
+				<entry key="next" value-ref="REDIRECT_TO_DELIVERY_METHOD"/>
+			</map>
+		</property>
+		<property name="progressBarId" value="deliveryAddress"/>
+	</bean>
+
+	<alias name="defaultACINOSUMResponsiveDeliveryMethodCheckoutStep" alias="responsiveACINOSUMDeliveryMethodCheckoutStep" />
+	<bean id="defaultACINOSUMResponsiveDeliveryMethodCheckoutStep"  parent="checkoutStep">
+		<property name="checkoutGroup" ref="responsiveCheckoutGroup"/>
+		<property name="checkoutStepValidator" ref="defaultResponsiveDeliveryMethodCheckoutValidator"/>
+		<property name="transitions">
+			<map merge="true">
+				<entry key="previous" value-ref="REDIRECT_TO_DELIVERY_ADDRESS"/>
+				<entry key="current" value-ref="REDIRECT_TO_DELIVERY_METHOD"/>
+				<entry key="next" value-ref="REDIRECT_TO_ACI_BILLING"/>
+			</map>
+		</property>
+		<property name="progressBarId" value="deliveryMethod"/>
+	</bean>
+
+	<alias name="defaultResponsiveACINOSUMBillingCheckoutStep" alias="responsiveACINOSUMBillingMethodCheckoutStep" />
+	      <bean id="defaultResponsiveACINOSUMBillingCheckoutStep" parent="checkoutStep">
+		    <property name="checkoutGroup" ref="responsiveACINOSUMCheckoutGroup"/>
+		    <property name="checkoutStepValidator" ref="defaultResponsivePaymentMethodCheckoutValidator"/>
+		    <property name="transitions">
+			  <map merge="true">
+				<entry key="previous" value-ref="REDIRECT_TO_DELIVERY_METHOD"/>
+				<entry key="current" value-ref="REDIRECT_TO_ACI_BILLING"/>
+				<entry key="next" value-ref="REDIRECT_TO_ACI_PAYMENT"/>
+			  </map>
+		    </property>
+		    <property name="progressBarId" value="billingMethod"/>
+	      </bean>
+	      <alias name="defaultResponsiveACINOSUMPaymentCheckoutStep" alias="responsiveACINOSUMPaymentCheckoutStep" />
+	      <bean id="defaultResponsiveACINOSUMPaymentCheckoutStep" parent="checkoutStep">
+		    <property name="checkoutGroup" ref="responsiveACINOSUMCheckoutGroup"/>
+		    <property name="checkoutStepValidator" ref="defaultACIResponsivePaymentCheckoutValidator"/>
+		    <property name="transitions">
+			  <map merge="true">
+				<entry key="previous" value-ref="REDIRECT_TO_ACI_BILLING"/>
+				<entry key="current" value-ref="REDIRECT_TO_ACI_PAYMENT"/>
+				<entry key="next" value="redirect:/checkout/multi/aci/redirecttoACI"/>
+			  </map>
+		    </property>
+		    <property name="progressBarId" value="aciPaymentMethod"/>
+	      </bean>
+
+	
+	
+	<!-- Responsive ACI Checkout Steps END - With NO Summary -->
+	
+	
+	<!--- Responsive checkout group  - With NOSummary Start -->
+		
+			<alias name="defaultResponsiveACINOSUMMultiStepCheckoutGroup" alias="responsiveACINOSUMCheckoutGroup" />
+			<bean id="defaultResponsiveACINOSUMMultiStepCheckoutGroup"  class="de.hybris.platform.acceleratorstorefrontcommons.checkout.steps.CheckoutGroup">
+				<property name="groupId"  value="responsiveACINOSUMCheckoutGroup"/>
+				<property name="checkoutStepMap">
+					<map merge="true">
+						<entry key="multi" value-ref="responsiveACINOSUMMultiStepCheckout"/>
+						<entry key="delivery-address" value-ref="responsiveACINOSUMDeliveryAddressCheckoutStep"/>
+						<entry key="delivery-method" value-ref="responsiveACINOSUMDeliveryMethodCheckoutStep"/>
+						<entry key="billing-address" value-ref="responsiveACINOSUMBillingMethodCheckoutStep"/>
+						<entry key="aci-payment" value-ref="responsiveACINOSUMPaymentCheckoutStep"/>
+					</map>
+				</property>
+				<property name="validationResultsMap">
+					<map merge="true">
+						<entry key="FAILED" value-ref="REDIRECT_TO_CART"/>
+						<entry key="REDIRECT_TO_DELIVERY_ADDRESS" value-ref="REDIRECT_TO_DELIVERY_ADDRESS"/>
+						<entry key="REDIRECT_TO_CART" value-ref="REDIRECT_TO_CART"/>
+						<entry key="REDIRECT_TO_ACI_BILLING" value-ref="REDIRECT_TO_ACI_BILLING"/>
+						<entry key="REDIRECT_TO_DELIVERY_METHOD" value-ref="REDIRECT_TO_DELIVERY_METHOD"/>
+					</map>
+				</property>
+				<property name="checkoutProgressBar">
+					<map merge="true">
+						<entry key="1" value-ref="responsiveACINOSUMDeliveryAddressCheckoutStep"/>
+						<entry key="2" value-ref="responsiveACINOSUMDeliveryMethodCheckoutStep"/>
+						<entry key="3" value-ref="responsiveACINOSUMBillingMethodCheckoutStep"/>
+						<entry key="4" value-ref="responsiveACINOSUMPaymentCheckoutStep"/>
+					</map>
+				</property>
+			</bean>
+		
+	<!--- Responsive checkout group  - With NO Summary END -->
+	
+	
+	
+	
+	
+	
+	
+	<bean id="defaultAciwebaddonBeforeViewJsPropsHandlerAdaptee" parent="abstractBeforeViewJsPropsHandlerAdaptee" class="de.hybris.platform.addonsupport.interceptors.ExportJsPropertiesBeforeViewHandler">
+		<property name="messageSource" ref="defaultAciwebaddonJavaScriptMessageResourceAccessor"/>
+	</bean>
+
+	<bean id="getAciwebaddonBeforeViewHandler" parent="beforeViewHandlerAdapter">
+		<property name="adaptee">
+			<ref bean="defaultAciwebaddonBeforeViewJsPropsHandlerAdaptee"/>
+		</property>
+	</bean>
+	<bean id="AciwebaddonBeforeViewHandlerListMergeDirective" depends-on="beforeViewHandlersList" parent="listMergeDirective">
+		<property name="add" ref="getAciwebaddonBeforeViewHandler"/>
+	</bean>
+
+
+	<bean id="REDIRECT_TO_ACI_BILLING" class="java.lang.String">
+		<constructor-arg value="redirect:/checkout/multi/aci/billing/view"/>
+	</bean> 
+	<bean id="REDIRECT_TO_ACI_PAYMENT" class="java.lang.String">
+            <constructor-arg value="redirect:/checkout/multi/aci/view"/>
+      </bean>
+      <bean id="REDIRECT_TO_ACISUMMARY" class="java.lang.String">
+		<constructor-arg value="redirect:/checkout/multi/summary/aci/view"/>
+	</bean>
+	<bean id="aciSummaryCheckoutFlowGroupResponsiveMapMergeDirective" parent="mapMergeDirective" depends-on="checkoutFlowGroupMap">
+		<property name="key" value="responsiveACICheckoutGroup"/>
+		<property name="value" ref="responsiveACICheckoutGroup"/>
+	</bean>
+	<bean id="aciNoSummaryCheckoutFlowGroupResponsiveMapMergeDirective" parent="mapMergeDirective" depends-on="checkoutFlowGroupMap">
+		<property name="key" value="responsiveACINOSUMCheckoutGroup"/>
+		<property name="value" ref="responsiveACINOSUMCheckoutGroup"/>
+	</bean>
+	
+	
+	
+	
+</beans>

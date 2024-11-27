@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2017 SAP SE or an SAP affiliate company.  All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+<config xmlns="http://www.hybris.com/cockpit/config">
+
+	<!-- acibackoffice UI configuration should be provided here -->
+
+	<!--<context component="component-code" module="acibackoffice">-->
+		<!--Please check documentation for code snippets for specific components-->
+	<!--</context>-->
+	<context component="explorer-tree" merge-by="module">
+      <n:explorer-tree xmlns:n="http://www.hybris.com/cockpitng/config/explorertree">
+            <n:navigation-node id="aci.payment">
+                <n:type-node id="ACIConfig" code="ACIConfig" />
+                <n:type-node id="ACIPaymentMethods" code="ACIPaymentMethods" />
+            </n:navigation-node>
+      </n:explorer-tree>
+  	</context>
+	<context type="ACIConfig" component="listview">
+	    <list:list-view xmlns:list="http://www.hybris.com/cockpitng/component/listView">
+	        <list:column qualifier="code"/>
+	        <list:column qualifier="bearerToken"/>
+	        <list:column qualifier="entityId"/>
+	        <list:column qualifier="paymentOption"/>
+	    </list:list-view>
+	</context>
+	<context type="ACIConfig" component="simple-search">
+	    <yss:simple-search xmlns:yss="http://www.hybris.com/cockpitng/config/simplesearch">
+	        <yss:field name="code"/>
+	    </yss:simple-search>
+	</context>
+	<context type="ACIConfig" component="advanced-search">
+	    <as:advanced-search xmlns:as="http://www.hybris.com/cockpitng/config/advancedsearch" connection-operator="AND">
+	        <as:field-list>
+	            <as:field name="code" operator="contains" selected="true"/>
+	            <as:field name="active" operator="equal" selected="false" sortable="false"/>
+	            <as:field name="bearerToken" operator="equal" selected="false" sortable="false"/>
+	            <as:field name="entityId" operator="equal" selected="false" sortable="false"/>
+	        </as:field-list>
+	        <as:sort-field name="code" asc="true" />     
+	    </as:advanced-search>
+	</context>
+	<context merge-by="module" component="editor-area" type="ACIConfig" module="commerceservicesbackoffice">
+	    <editorArea:editorArea xmlns:editorArea="http://www.hybris.com/cockpitng/component/editorArea">
+	        <editorArea:tab name="aci.general">
+	            <editorArea:section name="aci.essentials">
+	                <editorArea:attribute qualifier="code"/>
+	                <editorArea:attribute qualifier="active"/>
+	            </editorArea:section>
+	            <editorArea:section name="aci.main">
+	                <editorArea:attribute qualifier="bearerToken"/>
+	                
+	                <editorArea:attribute qualifier="entityId"/>
+	            </editorArea:section>
+	            <editorArea:section name="aci.sub">
+	                <editorArea:attribute qualifier="paymentOption"/>
+	                <editorArea:attribute qualifier="allowedPaymentTypes"/>
+	                <editorArea:attribute qualifier="checkoutSummaryRequired"/>
+	                <editorArea:attribute qualifier="dsTransactionId"/>
+	                <editorArea:attribute qualifier="isThreedsEnabled"/>
+	                <editorArea:attribute qualifier="threeDSVersion"/>
+	                <editorArea:attribute qualifier="threeDSChallengeIndicator"/>
+	                <editorArea:attribute qualifier="threeDSAuthentication"/>
+	                <editorArea:attribute qualifier="threeDSExemptionFlag"/>
+	                <editorArea:attribute qualifier="threeDSchallengeMandatedInd"/>
+	                <editorArea:attribute qualifier="transactionStatusReason"/>
+	                <editorArea:attribute qualifier="acsTransactionId"/>
+	            </editorArea:section>
+	        </editorArea:tab>
+	    </editorArea:editorArea>
+	</context>
+	<context component="create-wizard" type="ACIConfig" merge-by="module">
+	    <wz:flow xmlns:wz="http://www.hybris.com/cockpitng/config/wizard-config" id="ACIConfigWizard" title="create.title(ctx.TYPE_CODE)">
+	        <wz:prepare id="ACIConfigPrepare">
+	             <wz:initialize property="newACIConfig" type="ctx.TYPE_CODE"/>	            
+	        </wz:prepare>
+	        <wz:step id="step1" label="create.aciconfig.maininfo.label" sublabel="create.aciconfig.maininfo.sublabel">
+	            <wz:content id="step1.content">
+	                <wz:property-list root="newACIConfig">
+	                    <wz:property qualifier="code" type="java.lang.String"/>
+	                    <wz:property qualifier="active" type="java.lang.Boolean"/>
+	                    <wz:property qualifier="bearerToken" type="java.lang.String"/>
+	                    <wz:property qualifier="entityId" type="java.lang.String"/>
+	                    <wz:property qualifier="paymentOption"/>
+	                    <wz:property qualifier="allowedPaymentTypes"/>
+	                    <wz:property qualifier="checkoutSummaryRequired" type="java.lang.Boolean"/>
+	                    <wz:property qualifier="isThreedsEnabled" type="java.lang.Boolean"/>
+	                    <wz:property qualifier="dsTransactionId" type="java.lang.String"/>
+	                    <wz:property qualifier="threeDSVersion" type="java.lang.String"/>
+	                    <wz:property qualifier="threeDSChallengeIndicator" type="java.lang.String"/>
+	                    <wz:property qualifier="threeDSAuthentication" type="java.lang.String"/>
+	                    <wz:property qualifier="threeDSExemptionFlag" type="java.lang.String"/>
+	                    <wz:property qualifier="threeDSchallengeMandatedInd" type="java.lang.String"/>
+	                    <wz:property qualifier="transactionStatusReason" type="java.lang.String"/>
+	                    <wz:property qualifier="acsTransactionId" type="java.lang.String"/>
+	                    
+	                </wz:property-list>
+	            </wz:content>
+	            <wz:navigation id="step1.navigation">
+	        <wz:cancel/>
+			<wz:done visible="!#empty(newACIConfig.code) and !#empty(newACIConfig.bearerToken) and !#empty(newACIConfig.entityId)">
+	         <wz:save property="newACIConfig"/>
+	               </wz:done>
+	        </wz:navigation>
+	        </wz:step>
+
+	    </wz:flow>
+	</context>
+	<context type="ACIConfig" component="base" merge-by="type" parent="GenericItem">
+	        <y:base xmlns:y="http://www.hybris.com/cockpit/config/hybris">
+	            <y:labels>
+	                <y:label>code</y:label>
+	            </y:labels>
+	        </y:base>
+	</context>
+	<context type="ACIPaymentMethods" component="listview">
+	    <list:list-view xmlns:list="http://www.hybris.com/cockpitng/component/listView">
+	        <list:column qualifier="code"/>
+	        <list:column qualifier="name"/>
+	        <list:column qualifier="description"/>
+	        <list:column qualifier="syncType"/>
+	        <list:column qualifier="allowRegstration"/>
+	    </list:list-view>
+	</context>
+	<context type="ACIPaymentMethods" component="simple-search">
+	    <yss:simple-search xmlns:yss="http://www.hybris.com/cockpitng/config/simplesearch">
+	        <yss:field name="code"/>
+	    </yss:simple-search>
+	</context>
+	<context type="ACIPaymentMethods" component="advanced-search">
+	    <as:advanced-search xmlns:as="http://www.hybris.com/cockpitng/config/advancedsearch" connection-operator="AND">
+	        <as:field-list>
+	            <as:field name="code" operator="contains" selected="true"/>
+	            <as:field name="name" operator="contains" selected="true"/>
+	            <as:field name="syncType" operator="contains" selected="true"/>
+	            <as:field name="allowRegstration" operator="equal" selected="true" sortable="true"/>
+	       </as:field-list>
+	        <as:sort-field name="code" asc="true" />     
+	    </as:advanced-search>
+	</context>
+	<context merge-by="module" component="editor-area" type="ACIPaymentMethods" module="commerceservicesbackoffice">
+	    <editorArea:editorArea xmlns:editorArea="http://www.hybris.com/cockpitng/component/editorArea">
+	        <editorArea:tab name="aci.general">
+	            <editorArea:section name="aci.essentials">
+	                <editorArea:attribute qualifier="code"/>
+	                <editorArea:attribute qualifier="name"/>
+	            </editorArea:section>
+	            <editorArea:section name="aci.main">
+	                <editorArea:attribute qualifier="description"/>
+	                <editorArea:attribute qualifier="allowRegstration"/>
+	                <editorArea:attribute qualifier="syncType"/>
+	            </editorArea:section>
+	        </editorArea:tab>
+	    </editorArea:editorArea>
+	</context>
+	<context component="create-wizard" type="ACIPaymentMethods" merge-by="module">
+	    <wz:flow xmlns:wz="http://www.hybris.com/cockpitng/config/wizard-config" id="ACIPaymentMethodsWizard" title="create.title(ctx.TYPE_CODE)">
+	        <wz:prepare id="ACIPaymentMethodsPrepare">
+	             <wz:initialize property="newACIPaymentMethods" type="ctx.TYPE_CODE"/>	            
+	        </wz:prepare>
+	        <wz:step id="step1" label="create.acipaymentmethods.maininfo.label" sublabel="create.acipaymentmethods.maininfo.sublabel">
+	            <wz:content id="step1.content">
+	                <wz:property-list root="newACIPaymentMethods">
+	                    <wz:property qualifier="code" type="java.lang.String"/>
+	                    <wz:property qualifier="name" type="java.lang.String"/>
+	                    <wz:property qualifier="description" type="java.lang.String"/>
+	                    <wz:property qualifier="syncType" />
+	                    <wz:property qualifier="allowRegstration" type="java.lang.Boolean"/>
+	                </wz:property-list>
+	            </wz:content>
+	            <wz:navigation id="step1.navigation">
+	        <wz:cancel/>
+			<wz:done visible="!#empty(newACIPaymentMethods.code) and !#empty(newACIPaymentMethods.name)">
+	         <wz:save property="newACIPaymentMethods"/>
+	        </wz:done>
+	        </wz:navigation>
+	        </wz:step>
+
+	    </wz:flow>
+	</context>
+	<context type="ACIConfig" component="base" merge-by="type" parent="GenericItem">
+	        <y:base xmlns:y="http://www.hybris.com/cockpit/config/hybris">
+	            <y:labels>
+	                <y:label>code</y:label>
+	            </y:labels>
+	        </y:base>
+	</context>
+	<context type="ACIPaymentMethods" component="base" merge-by="type" parent="GenericItem">
+	        <y:base xmlns:y="http://www.hybris.com/cockpit/config/hybris">
+	            <y:labels>
+	                <y:label>code</y:label>
+	            </y:labels>
+	        </y:base>
+	        
+	</context>
+	
+	<context type="ACIResponse" component="base" merge-by="type" parent="GenericItem">
+        <y:base xmlns:y="http://www.hybris.com/cockpit/config/hybris">
+            <y:labels>
+                <y:label>paymentType+ ' - ' +result + ' : '  + resultDetails</y:label>
+            </y:labels>
+        </y:base>
+    </context>
+	     
+	<context merge-by="type" parent="GenericItem" type="BaseStore" component="editor-area">
+	        <editorArea:editorArea xmlns:editorArea="http://www.hybris.com/cockpitng/component/editorArea">
+	            <editorArea:tab name="hmc.properties">
+	                <editorArea:section name="aci.basestore.config">
+	                    <editorArea:attribute xmlns="http://www.hybris.com/cockpitng/component/editorArea" qualifier="aciConfig"/>
+	                </editorArea:section>
+	            </editorArea:tab>
+	        </editorArea:editorArea>
+     </context>
+     <context merge-by="type" parent="AbstractOrder" type="Order" component="editor-area">
+		<editorArea:editorArea xmlns:editorArea="http://www.hybris.com/cockpitng/component/editorArea">
+			<editorArea:tab name="hmc.properties">
+				<editorArea:section name="hmc.aci">
+					<editorArea:attribute qualifier="aciMerchantTransactionId" readonly="true"/>
+					<editorArea:attribute qualifier="aciCheckoutId" readonly="true"/>
+					<editorArea:attribute qualifier="aciPaymentStatus" readonly="true"/>
+					<editorArea:attribute qualifier="aciResponse" readonly="true"/>
+				</editorArea:section>
+			</editorArea:tab>
+		</editorArea:editorArea>
+	</context>
+
+</config>
